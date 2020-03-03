@@ -83,3 +83,7 @@ ModelManifest.xml
   
 #Backup file  
 *.bak
+/Server/Src/LockstepEngine/obj
+/Server/bin
+/Server/Src/SimpleServer/obj
+/Unity/Output
