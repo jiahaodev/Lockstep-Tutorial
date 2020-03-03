@@ -1,3 +1,12 @@
+/****************************************************
+    文件：MessagePacker.cs
+    作者：JiahaoWu
+    邮箱: jiahaodev@163.ccom
+    日期：2020/03/03      
+    功能：【单例】消息处理者
+            * 反序列化
+            *  序列化
+*****************************************************/
 using Lockstep.Network;
 using Lockstep.Serialization;
 using NetMsg.Common;

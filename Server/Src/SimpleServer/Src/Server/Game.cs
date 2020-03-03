@@ -1,3 +1,17 @@
+/****************************************************
+    文件：Game.cs
+    作者：JiahaoWu
+    邮箱: jiahaodev@163.ccom
+    日期：2020/03/03      
+    功能：（房间内）游戏逻辑处理
+      * 进入房间
+      * 离开房间
+      * 战斗转发
+      * 用户重连
+      * 消息重发
+      * Hash校验
+*****************************************************/
+
 //#define DEBUG_SHOW_INPUT
 using System;
 using System.Collections.Generic;
@@ -77,11 +91,12 @@ namespace Lockstep.Game {
 #endif
 namespace Lockstep.FakeServer {
     public class Game : BaseLogger {
+        //处理网络消息委托
         private delegate void DealNetMsg(Player player, BaseMsg data);
-
+        //解析网络消息委托
         private delegate BaseMsg ParseNetMsg(Deserializer reader);
 
-
+        //限定最多“2名”玩家对战
         public const int MaxPlayerCount = 2;
 
         public int MapId { get; set; }
@@ -112,13 +127,13 @@ namespace Lockstep.FakeServer {
 
         public bool IsRunning { get; private set; }
         public string Name;
-        public float TimeSinceCreate;
-        public bool IsFinished = false;
+        public float TimeSinceCreate;    //游戏起始时间
+        public bool IsFinished = false;  //游戏是否结束
 
-        public Msg_G2C_GameStartInfo GameStartInfo { get; set; }
+        public Msg_G2C_GameStartInfo GameStartInfo { get; set; }  //游戏“初始信息”记录
 
-
-        private Dictionary<long, byte> _userId2LocalId = new Dictionary<long, byte>();
+        //玩家uuid转换为“本局游戏”内id（游戏内临时使用）
+        private Dictionary<long, byte> _userId2LocalId = new Dictionary<long, byte>(); 
         public Player[] Players { get; private set; }
 
 
@@ -126,7 +141,7 @@ namespace Lockstep.FakeServer {
         public int Tick = 0;
         private Dictionary<int, HashCodeMatcher> _hashCodes = new Dictionary<int, HashCodeMatcher>();
 
-
+        //记录“消息id”对应的处理函数
         private const int MaxMsgIdx = (short) EMsgSC.EnumCount;
         private DealNetMsg[] allMsgDealFuncs = new DealNetMsg[MaxMsgIdx];
         private ParseNetMsg[] allMsgParsers = new ParseNetMsg[MaxMsgIdx];
@@ -199,9 +214,11 @@ namespace Lockstep.FakeServer {
 
         #region  life cycle
 
+        //server负责检测“当前房间”等待人数是否足够，
+        //如果达到“开战人数”要求，调用Game.DoStart()，开启房间内的一局战斗
         public void DoStart(int gameId, int gameType, int mapId, Player[] playerInfos, string gameHash){
             State = EGameState.Loading;
-            Seed = LRandom.Range(1, 100000);
+            Seed = LRandom.Range(1, 100000); //记录本局随机种子
             Tick = 0;
             _timeSinceLoaded = 0;
             _firstFrameTimeStamp = 0;
@@ -222,6 +239,7 @@ namespace Lockstep.FakeServer {
             }
 
             //Temp code 
+            //原作者的临时代码，暂时不管具体逻辑
             for (byte i = 0; i < count; i++) {
                 var player = Players[i];
                 player.GameData = new GameData();
@@ -241,7 +259,7 @@ namespace Lockstep.FakeServer {
 
         public void DoDestroy(){
             Log($"Room {GameId} Destroy");
-            DumpGameFrames();
+            DumpGameFrames(); //记录所有的“对战日志”到本地
         }
 
         Player CreatePlayer(GamePlayerInfo playerInfo, byte localId){
@@ -259,7 +277,8 @@ namespace Lockstep.FakeServer {
             var frame = GetOrCreateFrame(Tick);
             var inputs = frame.Inputs;
             if (!isForce) {
-                //是否所有的输入  都已经等到
+                //是否所有的输入  都已经等到 
+                //（锁帧同步，等待所有玩家都输入完毕）
                 for (int i = 0; i < inputs.Length; i++) {
                     if (inputs[i] == null) {
                         return false;
@@ -284,7 +303,7 @@ namespace Lockstep.FakeServer {
 
             msg.startTick = frames[0].tick;
             msg.frames = frames;
-            BorderUdp(EMsgSC.G2C_FrameData, msg);
+            BorderUdp(EMsgSC.G2C_FrameData, msg); //广播“本帧数据”给所有clients
             if (_firstFrameTimeStamp <= 0) {
                 _firstFrameTimeStamp = _timeSinceLoaded;
             }
@@ -294,11 +313,11 @@ namespace Lockstep.FakeServer {
                     LTime.realtimeSinceStartupMS + NetworkDefine.UPDATE_DELTATIME * _ServerTickDealy;
             }
 
-            Tick++;
+            Tick++;       //“本帧”服务端任务，完成；更新Tick++。
             return true;
         }
 
-
+        //记录“对战日志”到本地
         private void DumpGameFrames(){
             var msg = new Msg_RepMissFrame();
             int count = System.Math.Min((Tick - 1), _allHistoryFrames.Count);

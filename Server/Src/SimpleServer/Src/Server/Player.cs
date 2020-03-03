@@ -1,3 +1,12 @@
+/****************************************************
+    文件：Player.cs
+    作者：JiahaoWu
+    邮箱: jiahaodev@163.ccom
+    日期：2020/03/03      
+    功能：游戏中的“玩家单位”
+      * TCP 通信
+      * UDP 通信
+*****************************************************/
 using Lockstep.Network;
 using Lockstep.Util;
 using NetMsg.Common;

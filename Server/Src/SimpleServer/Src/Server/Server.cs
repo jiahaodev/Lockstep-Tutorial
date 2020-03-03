@@ -1,3 +1,13 @@
+/****************************************************
+    文件：Server.cs
+    作者：JiahaoWu
+    邮箱: jiahaodev@163.ccom
+    日期：2020/03/03      
+    功能：负责“接收、分发”网络消息
+         * 玩家连接请求--》进入房间
+         * 玩家断开连接--》离开房间
+         * 战斗消息更新--》游戏更新（game.update）
+*****************************************************/
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -37,6 +47,7 @@ namespace Lockstep.FakeServer {
             _startUpTimeStamp = _lastUpdateTimeStamp = DateTime.Now;
         }
 
+        //接收消息，并分发
         public void Dispatch(Session session, Packet packet){
             ushort opcode = packet.Opcode();
             if (opcode == 39) { 
@@ -48,6 +59,7 @@ namespace Lockstep.FakeServer {
             OnNetMsg(session, opcode, message as BaseMsg);
         }
 
+        //消息处理
         void OnNetMsg(Session session, ushort opcode, BaseMsg msg){
             var type = (EMsgSC) opcode;
             switch (type) {
@@ -65,6 +77,7 @@ namespace Lockstep.FakeServer {
             _game?.OnNetMsg(player, opcode, msg);
         }
 
+        //检测“帧间隔”是否已经达到；更新。
         public void Update(){
             var now = DateTime.Now;
             _deltaTime = (now - _lastUpdateTimeStamp).TotalSeconds;
@@ -75,6 +88,7 @@ namespace Lockstep.FakeServer {
             }
         }
 
+        //驱动游戏逻辑更新
         public void DoUpdate(){
             //check frame inputs
             var fDeltaTime = (float) _deltaTime;
@@ -82,7 +96,7 @@ namespace Lockstep.FakeServer {
             _game?.DoUpdate(fDeltaTime);
         }
 
-
+        //处理玩家加入房间请求
         void OnPlayerConnect(Session session, BaseMsg message){
             //TODO load from db
             var info = new Player();
@@ -109,6 +123,8 @@ namespace Lockstep.FakeServer {
             Debug.Log("OnPlayerConnect count:" + _curCount + " ");
         }
 
+
+        //处理玩家退出房间请求
         void OnPlayerQuit(Session session, BaseMsg message){
             var player = session.GetBindInfo<Player>();
             if (player == null)
