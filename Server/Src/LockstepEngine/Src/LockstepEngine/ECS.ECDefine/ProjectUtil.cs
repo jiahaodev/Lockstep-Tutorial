@@ -1,3 +1,11 @@
+/****************************************************
+    文件：ProjectUtil.cs
+    作者：JiahaoWu
+    邮箱: jiahaodev@163.ccom
+    日期：2020/03/03      
+    功能：Log相关功能
+         （解决方案中，没有找到相关的引用）
+*****************************************************/
 using System;
 using System.Collections.Generic;
 using System.IO;

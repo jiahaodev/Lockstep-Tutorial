@@ -1,3 +1,11 @@
+/****************************************************
+    文件：NetworkProxy.cs
+    作者：JiahaoWu
+    邮箱: jiahaodev@163.ccom
+    日期：2020/03/03      
+    功能：网络代理
+         （采用了async和await异步编程方法）
+*****************************************************/
 using System;
 using System.Collections.Generic;
 using System.Linq;

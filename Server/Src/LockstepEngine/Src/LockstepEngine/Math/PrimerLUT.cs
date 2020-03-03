@@ -1,3 +1,10 @@
+/****************************************************
+    文件：PrimerLUT.cs
+    作者：JiahaoWu
+    邮箱: jiahaodev@163.ccom
+    日期：2020/03/03      
+    功能：素数LUT
+*****************************************************/
 namespace Lockstep.Math {
     public class PrimerLUT {
         public static int GetPrimer(int idx){

@@ -1,4 +1,12 @@
-﻿using System;
+﻿/****************************************************
+    文件：Circularbuffer.cs
+    作者：JiahaoWu
+    邮箱: jiahaodev@163.ccom
+    日期：2020/03/03      
+    功能：环形缓冲区
+          （用于提高内存的复用率）
+*****************************************************/
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net.Sockets;

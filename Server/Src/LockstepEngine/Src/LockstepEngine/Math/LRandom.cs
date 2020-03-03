@@ -1,4 +1,12 @@
-﻿using System;
+﻿/****************************************************
+    文件：LRandom.cs
+    作者：JiahaoWu
+    邮箱: jiahaodev@163.ccom
+    日期：2020/03/03      
+    功能：固定随机数算法
+          （有引用顶点数逻辑）
+*****************************************************/
+using System;
 using Lockstep.Math;
 
 namespace Lockstep.Math {

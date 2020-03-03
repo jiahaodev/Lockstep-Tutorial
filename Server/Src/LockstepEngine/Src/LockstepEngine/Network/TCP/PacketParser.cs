@@ -1,4 +1,12 @@
-﻿using System;
+﻿/****************************************************
+    文件：PacketParser.cs
+    作者：JiahaoWu
+    邮箱: jiahaodev@163.ccom
+    日期：2020/03/03      
+    功能：定义数据包的格式
+        （长度 + 实体消息）
+*****************************************************/
+using System;
 
 namespace Lockstep.Network
 {
